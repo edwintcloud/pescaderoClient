@@ -12,11 +12,6 @@ const Markers = props => (
   </>
 );
 
-// class Map extends Component{
-//   render() {
-//     return()
-//   }
-// }
 export const Map = withScriptjs(
   withGoogleMap(props => (
     <GoogleMap defaultZoom={props.zoom} defaultCenter={props.center}>
