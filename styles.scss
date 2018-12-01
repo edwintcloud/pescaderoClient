@@ -1,0 +1,60 @@
+// variables
+$break-medium: 800px;
+$break-small: 500px;
+$navbar-height: 50px;
+
+html, body {
+ height: 100%;
+ margin: 0;
+ background-color: black;
+}
+
+// base container
+.base_container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: $navbar-height 1fr 1fr;
+  grid-template-areas: "n n"
+                       "m i"
+                       "m i";
+  font-size: 1em;
+  width: 100vw;
+  height: 100vh;
+  @media screen and (max-width: $break-medium) {
+    grid-template-areas: "n n"
+                         "m m"
+                         "i i";
+  }
+  @media screen and (max-width: $break-small) {
+    grid-template-areas: "n n"
+                         "i i"
+                         "i i";
+  }
+}
+
+// navbar styles
+.navbar {
+  grid-area: n;
+  box-shadow: 0px 1px 10px -1px rgba(0,0,0,0.75)!important;
+  background-color: #E9ECEF!important;
+  margin-bottom: 0!important;
+  .dropdown.right {
+    padding-right: 20px!important;
+  }
+}
+
+// map styles
+.map_container {
+  grid-area: m;
+  .map {
+    height: calc(100vh - #{$navbar-height});
+  }
+  @media screen and (max-width: $break-small) {
+    display: none;
+  }
+}
+
+// issues styles
+.issues_container {
+  grid-area: i;
+}
