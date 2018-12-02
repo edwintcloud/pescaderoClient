@@ -51,9 +51,10 @@ body {
       }
     }
     .button {
-      padding: 7px !important;
+      padding: 8px !important;
       float: right;
       margin: 0 8px 8px 0!important;
+      font-size: .9em;
     }
   }
 }
@@ -84,8 +85,8 @@ body {
       margin: 5px 10px !important;
 
       img {
-        max-width: 50px!important;
-        max-height: 50px!important;
+        height: 35px!important;
+        object-fit: fill;
       }
     }
     .card:first-of-type {
