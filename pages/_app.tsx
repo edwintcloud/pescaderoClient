@@ -1,23 +1,14 @@
-import React from 'react'
-import { Provider } from 'react-redux'
-import App, { Container } from 'next/app'
-import withRedux from 'next-redux-wrapper'
-import { initStore } from '../stores'
-import '../styles.scss'
+import React from "react";
+import App, { Container } from "next/app";
+import "../styles.scss";
 
-export default withRedux(initStore)(class MyApp extends App {
-  static async getInitialProps ({Component, ctx}) {
-    return {
-      pageProps: (Component.getInitialProps ? await Component.getInitialProps(ctx) : {})
-    }
-  }
-
-  render () {
-    const {Component, pageProps, store} = this.props
-    return <Container>
-      <Provider store={store}>
+export default class MyApp extends App {
+  render() {
+    const { Component, pageProps } = this.props;
+    return (
+      <Container>
         <Component {...pageProps} />
-      </Provider>
-    </Container>
+      </Container>
+    );
   }
-})
+}

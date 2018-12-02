@@ -4,6 +4,7 @@ import {
   GoogleMap,
   Marker
 } from "react-google-maps";
+import { mapStyles } from "./mapStyles";
 
 const Markers = props => (
   <>
@@ -12,10 +13,23 @@ const Markers = props => (
     )}
     {props.markers.issues &&
       props.markers.issues.map((issue, index) => (
-        <Marker key={index} position={issue.location} />
+        <Marker
+          title={issue.title}
+          key={index}
+          position={issue.location}
+          icon={{
+            path: window.google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+            strokeColor: "black",
+            fillColor: "red",
+            fillOpacity: 0.7,
+            strokeWeight: 2,
+            scale: 7
+          }}
+        />
       ))}
   </>
 );
+
 
 export const Map = withScriptjs(
   withGoogleMap(props => (
@@ -25,8 +39,10 @@ export const Map = withScriptjs(
       onClick={c => {
         props.onClick(c.latLng);
       }}
+      options={{ styles: mapStyles }}
     >
       <Markers markers={props.markers} />
+      
     </GoogleMap>
   ))
 );

@@ -1,13 +1,16 @@
-import { Dropdown, Menu } from "semantic-ui-react";
+import { Dropdown, Menu, Image, DropdownDivider, Button, DropdownItem } from "semantic-ui-react";
+
 export const NavBar = props => (
   <Menu secondary className="navbar">
     <Menu.Item header>Project Pescadero</Menu.Item>
-    <Dropdown item className="right">
+    {props.user && (
+      <Dropdown icon simple className="right" direction="left" trigger={(<Image avatar src={props.user.avatar} />)}>
       <Dropdown.Menu>
-        <Dropdown.Header>{props.name}</Dropdown.Header>
-        <Dropdown.Divider />
-        <Dropdown.Item>Logout</Dropdown.Item>
+        <Dropdown.Header><Image avatar src={props.user.avatar} /><span>{props.user.firstName}</span></Dropdown.Header>
+        <DropdownDivider />
+        <Button negative>Logout</Button>
       </Dropdown.Menu>
     </Dropdown>
+    )}  
   </Menu>
 );

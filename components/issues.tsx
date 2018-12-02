@@ -4,17 +4,15 @@ import {
   Button,
   Card,
   Image,
-  Icon,
-  Modal,
-  Header,
-  Form
+  Icon
 } from "semantic-ui-react";
 
 export const Issues = props => (
   <>
+  {props.user && (<>
     <div className="issues_header">
       <span className="ui huge header mx-3 mr-4">Issues</span>
-      <span className="ui tiny header">12 Open issues. 33 Resolved.</span>
+      <span className="ui tiny header">{props.openIssues} Open issues. {props.resolvedIssues} Resolved.</span>
       <Menu pointing secondary>
         <Menu.Item
           name="all"
@@ -33,14 +31,15 @@ export const Issues = props => (
         />
       </Menu>
     </div>
-    <div className="issues_cards ui centered cards px-2">
+    <div className="issues_cards cards ui">
       {props.issues.map((issue, index) => (
         <Card fluid key={index}>
           <Card.Content>
             <Image
               floated="right"
               size="mini"
-              src="https://react.semantic-ui.com/images/avatar/large/steve.jpg"
+              src={issue.author.avatar}
+              circular
             />
             <Card.Header>{issue.title}</Card.Header>
             <Card.Meta>by: {issue.author.firstName}</Card.Meta>
@@ -66,5 +65,7 @@ export const Issues = props => (
         </Card>
       ))}
     </div>
+  </>)}
+    
   </>
 );
