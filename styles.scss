@@ -53,8 +53,8 @@ body {
     .button {
       padding: 8px !important;
       float: right;
-      margin: 0 8px 8px 0!important;
-      font-size: .9em;
+      margin: 0 8px 8px 0 !important;
+      font-size: 0.9em;
     }
   }
 }
@@ -85,7 +85,7 @@ body {
       margin: 5px 10px !important;
 
       img {
-        height: 35px!important;
+        height: 35px !important;
         object-fit: fill;
       }
     }
@@ -103,4 +103,71 @@ body {
       margin-left: 15px;
     }
   }
+}
+
+// Landing page styles
+.landing_container {
+  background-color: #e9ecef;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: Lato, Helvetica Neue, Arial, Helvetica, sans-serif;
+  .landing_title {
+    font-size: 4.5rem;
+    font-weight: 300;
+  }
+  .landing_subtitle {
+    font-size: 1.25rem;
+    font-weight: 100;
+    margin: 0;
+  }
+
+  hr {
+    width: 250px;
+    margin: 20px;
+    border: 0;
+    border-top: 1px solid rgba(0,0,0,.1);
+  }
+}
+
+.landing_button {
+  font-weight: 400!important;
+  background-color: #007bff!important;
+  border-color: #007bff!important;
+  padding: 10px 40px!important;
+  border-radius: 3px!important;
+  color: white!important;
+}
+
+.landing_button:hover {
+  background-color: #0069d9!important;
+  border-color: #0062cc!important;
+}
+
+// Login and Signup styles
+.login_container,
+.signup_container {
+  background-color: white;
+  width: 400px;
+  height: 275px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 20px -4px rgba(0,0,0,0.75);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .login_form,
+  .signup_form {
+    width: 90%;
+  }
+  button {
+    margin: 10px 0!important;
+    float: right;
+  }
+}
+.signup_container {
+  width: 500px!important;
+  height: 500px!important;
 }

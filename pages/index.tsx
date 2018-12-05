@@ -1,6 +1,14 @@
 import React from "react";
 
-import { NavBar, Map, Issues, IssuesModal } from "../components";
+import {
+  NavBar,
+  Map,
+  Issues,
+  IssuesModal,
+  Landing,
+  Login,
+  Signup
+} from "../components";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyDDwrgWKkdd5dT7ftnPaccBM6zgRb5R90g";
 
@@ -101,9 +109,14 @@ class IndexPage extends React.Component<IProps, IState> {
         resolved: "false"
       }
     ],
-    user: {
+    currentUser: {
       firstName: "edwin",
-      avatar: "https://via.placeholder.com/100"
+      lastName: "cloud",
+      avatar: "https://via.placeholder.com/100",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      city: ""
     },
     issuesNav: "all",
     openIssues: 22,
@@ -129,15 +142,28 @@ class IndexPage extends React.Component<IProps, IState> {
     modalOpen: false,
     modalTitle: "Edit Issue",
     currentIssueTitleError: false,
-    currentIssueDescError: false
+    currentIssueDescError: false,
+    loginOpen: false,
+    signupOpen: false,
+    signupEmailInvalid: false,
+    signupPasswordInvalid: false,
+    signupConfirmPasswordInvalid: false,
+    cities: [
+      {text: "San Francisco, CA (USA)", value: "a3r3sdf"},
+      {text: "San Jose, CA (USA)", value: "shos"}
+    ]
   };
+
+  componentWillMount() {
+    console.log(this.state.currentUser)
+  }
 
   render() {
     // Add marker to map component
     const mapAddMarker = location => {
       console.log(location.lat());
       console.log(location.lng());
-      this.setState({modalOpen:true});
+      this.setState({ modalOpen: true });
     };
 
     // Issues NavBar onClick method
@@ -148,12 +174,12 @@ class IndexPage extends React.Component<IProps, IState> {
     // IssuesModal title and description on change method
     const currentIssueChange = (event, data) => {
       // update current issue state
-      this.setState(prevState => ({
+      this.setState({
         currentIssue: {
-          ...prevState.currentIssue,
+          ...this.state.currentIssue,
           [data.name]: data.value
         }
-      }));
+      });
       if (data.name === "description") {
         if (data.value.length < 5) {
           this.setState({ currentIssueDescError: true });
@@ -171,56 +197,162 @@ class IndexPage extends React.Component<IProps, IState> {
 
     // IssuesModal Close click
     const modalClose = () => {
-      this.setState({modalOpen:false});
-      console.log("close")
+      this.setState({ modalOpen: false });
+      console.log("close");
     };
 
     // IssuesModal Submit click
     const modalSubmit = () => {
-      this.setState({modalOpen:false});
-    }
+      this.setState({ modalOpen: false });
+    };
 
-    return (
-      <div className="base_container">
-        <NavBar user={this.state.user} />
-        <div className="map_container">
-          <Map
-            googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
-            loadingElement={<div className="map" />}
-            containerElement={<div className="map" />}
-            mapElement={<div className="map" />}
-            zoom={15}
-            center={this.state.markers.currentLocation}
-            markers={this.state.markers}
-            onClick={mapAddMarker}
+    // Landing Login click
+    const loadLogin = () => {
+      this.setState({ loginOpen: true });
+    };
+
+    // Landing SignUp click
+    const loadSignup = () => {
+      this.setState({ signupOpen: true });
+    };
+
+    // Login inputs on change
+    const loginInputsChange = (event, data) => {
+      // update currentUser state
+      this.setState({
+        currentUser: {
+          ...this.state.currentUser,
+          [data.name]: data.value
+        }
+      });
+    };
+
+    // Login on Submit
+    const loginSubmit = () => {
+      console.log(this.state.currentUser.email);
+      console.log(this.state.currentUser.password);
+      this.setState({ signupOpen: false });
+    };
+
+    // Signup inputs on change
+    const signupInputsChange = (event, data) => {
+      // update currentUser state
+      this.setState({
+        currentUser: {
+          ...this.state.currentUser,
+          [data.name]: data.value
+        }
+      });
+
+      if (data.name === "email") {
+        if (/.+@.+\..+/.test(data.value)) {
+          this.setState({ signupEmailInvalid: false });
+        } else {
+          this.setState({ signupEmailInvalid: true });
+        }
+      }
+      if (data.name === "password") {
+        if (data.value.length > 5) {
+          this.setState({ signupPasswordInvalid: false });
+        } else {
+          this.setState({ signupPasswordInvalid: true });
+        }
+      }
+      if (data.name === "confirmPassword") {
+        if (data.value === this.state.currentUser.password) {
+          this.setState({ signupConfirmPasswordInvalid: false });
+        } else {
+          this.setState({ signupConfirmPasswordInvalid: true });
+        }
+      }
+    };
+
+    // Signup on Submit
+    const signupSubmit = () => {
+      console.log(this.state.currentUser.email);
+      console.log(this.state.currentUser.password);
+      this.setState({ loginOpen: false });
+    };
+
+    if (this.state.currentUser) {
+      if (this.state.loginOpen) {
+        return (
+          <Login
+            onSubmit={loginSubmit}
+            passwordValue={this.state.currentUser.password}
+            emailValue={this.state.currentUser.email}
+            inputsChange={loginInputsChange}
           />
-        </div>
-        <div className="issues_container">
-          <Issues
-            issues={this.state.issues}
-            activeNav={this.state.issuesNav}
-            navOnClick={issuesNavClick}
-            openIssues={this.state.openIssues}
-            resolvedIssues={this.state.resolvedIssues}
-            user={this.state.user}
+        );
+      } else if (this.state.signupOpen) {
+        return (
+          <Signup
+            onSubmit={signupSubmit}
+            passwordValue={this.state.currentUser.password}
+            emailValue={this.state.currentUser.email}
+            inputsChange={signupInputsChange}
+            emailInvalid={this.state.signupEmailInvalid}
+            passwordInvalid={this.state.signupPasswordInvalid}
+            confirmPasswordInvalid={this.state.signupConfirmPasswordInvalid}
+            firstNameValue={this.state.currentUser.firstName}
+            lastNameValue={this.state.currentUser.lastName}
+            confirmPasswordValue={this.state.currentUser.confirmPassword}
+            cityOptions={this.state.cities}
           />
-        </div>
-        <div className="issues_modal">
-          <IssuesModal
-            open={this.state.modalOpen}
-            title={this.state.modalTitle}
-            issueTitleValue={this.state.currentIssue.title}
-            issueTitleValueChange={currentIssueChange}
-            issueTitleValueError={this.state.currentIssueTitleError}
-            issueDescValue={this.state.currentIssue.description}
-            issueDescValueChange={currentIssueChange}
-            issueDescValueError={this.state.currentIssueDescError}
-            cancelClick={modalClose}
-            submitClick={modalSubmit}
+        );
+      } else {
+        return (
+          <Landing
+            title="Project Pescadero"
+            subtitle="Changing the world, one small act of kindness at a time."
+            loginClick={loadLogin}
+            signupClick={loadSignup}
           />
+        );
+      }
+    } else {
+      return (
+        <div className="base_container">
+          <NavBar user={this.state.currentUser} />
+          <div className="map_container">
+            <Map
+              googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
+              loadingElement={<div className="map" />}
+              containerElement={<div className="map" />}
+              mapElement={<div className="map" />}
+              zoom={15}
+              center={this.state.markers.currentLocation}
+              markers={this.state.markers}
+              onClick={mapAddMarker}
+            />
+          </div>
+          <div className="issues_container">
+            <Issues
+              issues={this.state.issues}
+              activeNav={this.state.issuesNav}
+              navOnClick={issuesNavClick}
+              openIssues={this.state.openIssues}
+              resolvedIssues={this.state.resolvedIssues}
+              user={this.state.currentUser}
+            />
+          </div>
+          <div className="issues_modal">
+            <IssuesModal
+              open={this.state.modalOpen}
+              title={this.state.modalTitle}
+              issueTitleValue={this.state.currentIssue.title}
+              issueTitleValueChange={currentIssueChange}
+              issueTitleValueError={this.state.currentIssueTitleError}
+              issueDescValue={this.state.currentIssue.description}
+              issueDescValueChange={currentIssueChange}
+              issueDescValueError={this.state.currentIssueDescError}
+              cancelClick={modalClose}
+              submitClick={modalSubmit}
+            />
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 }
 
