@@ -163,16 +163,21 @@ class IndexPage extends React.Component<IProps, IState> {
     this.setState({ loadingError: "" });
     this.setState({ cities: [] });
     this.setState({ issues: [] });
+    this.setState({ currentUser: {} });
 
     // fetch data from api and update state
     try {
       const citiesRes = await fetch(`${API_HOST}/api/cities`);
       const issuesRes = await fetch(`${API_HOST}/api/issues`);
-      if (!citiesRes.ok || !issuesRes.ok) {
+      const currentUserRes = await fetch(`${API_HOST}/api/users/current`, {
+        credentials: "include"
+      });
+      if (!citiesRes.ok || !issuesRes.ok || !currentUserRes.ok) {
         throw new Error();
       }
       const citiesData = await citiesRes.json();
       const issuesData = await issuesRes.json();
+      const currentUser = await currentUserRes.json();
       citiesData.map(i => {
         this.setState({
           cities: [
@@ -184,13 +189,14 @@ class IndexPage extends React.Component<IProps, IState> {
           ]
         });
       });
-      this.setState({issues:issuesData});
+      this.setState({ issues: issuesData });
       this.setState({
         openIssues: issuesData.filter(i => i.resolved === "false").length
       });
       this.setState({
         resolvedIssues: issuesData.filter(i => i.resolved === "true").length
       });
+      this.setState({ currentUser: currentUser });
       this.setState({ loading: false });
     } catch (e) {
       this.setState({ loading: false });
@@ -271,10 +277,27 @@ class IndexPage extends React.Component<IProps, IState> {
     };
 
     // Login on Submit
-    const loginSubmit = () => {
-      console.log(this.state.currentUser.email);
-      console.log(this.state.currentUser.password);
-      this.setState({ signupOpen: false });
+    const loginSubmit = async () => {
+      try {
+        const loginRes = await fetch(`${API_HOST}/api/users/login`, {
+          method: "POST",
+          body: JSON.stringify(this.state.currentUser),
+          credentials: "include"
+        });
+        if (!loginRes.ok) {
+          throw new Error();
+        }
+        const currentUserRes = await fetch(`${API_HOST}/api/users/current`, {
+          credentials: "include"
+        });
+        if (!currentUserRes.ok) {
+          throw new Error();
+        }
+        this.setState({ currentUser: await currentUserRes.json() });
+      } catch (e) {
+        console.log(e);
+      }
+      this.setState({ loginOpen: false });
     };
 
     // Signup inputs on change
@@ -314,8 +337,19 @@ class IndexPage extends React.Component<IProps, IState> {
     const signupSubmit = () => {
       console.log(this.state.currentUser.email);
       console.log(this.state.currentUser.password);
-      this.setState({ loginOpen: false });
+      this.setState({ signupOpen: false });
     };
+
+    // Logout button on click
+    const logoutUser = async () => {
+      const logoutUserRes = await fetch(`${API_HOST}/api/users/logout`, {
+        method: "POST",
+        credentials: "include"
+      });
+      // TODO: finish
+    }
+
+    // Render page conditionally
     if (this.state.loading) {
       return (
         <div className="landing_container">
@@ -329,7 +363,7 @@ class IndexPage extends React.Component<IProps, IState> {
           <h1 style={{ color: "red" }}>{this.state.loadingError}</h1>
         </div>
       );
-    } else if (!this.state.currentUser) {
+    } else if (!this.state.currentUser.hasOwnProperty("_id")) {
       if (this.state.loginOpen) {
         return (
           <Login
@@ -368,7 +402,7 @@ class IndexPage extends React.Component<IProps, IState> {
     } else {
       return (
         <div className="base_container">
-          <NavBar user={this.state.currentUser} />
+          <NavBar user={this.state.currentUser} logoutClick={logoutUser} />
           <div className="map_container">
             <Map
               googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
