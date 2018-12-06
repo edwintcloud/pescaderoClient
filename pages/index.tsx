@@ -114,8 +114,6 @@ class IndexPage extends React.Component<IProps, IState> {
       city: ""
     },
     issuesNav: "all",
-    openIssues: 22,
-    resolvedIssues: 12,
     currentIssue: {
       title: "A test Issue",
       description: "description",
@@ -293,12 +291,14 @@ class IndexPage extends React.Component<IProps, IState> {
       if (this.state.currentIssue.hasOwnProperty("resolved")) {
         // edit issue
         try {
-          
-          const editIssueRes = await fetch(`${API_HOST}/api/issues?id=${this.state.currentIssue._id}`, {
-            method: "PUT",
-            body: JSON.stringify(this.state.currentIssue)
-          });
-          console.log(JSON.stringify(this.state.currentIssue))
+          const editIssueRes = await fetch(
+            `${API_HOST}/api/issues?id=${this.state.currentIssue._id}`,
+            {
+              method: "PUT",
+              body: JSON.stringify(this.state.currentIssue)
+            }
+          );
+          console.log(JSON.stringify(this.state.currentIssue));
           if (!editIssueRes.ok) {
             throw new Error();
           }
@@ -510,16 +510,47 @@ class IndexPage extends React.Component<IProps, IState> {
 
     // Issues card on click
     const issuesCardClick = data => {
-      console.log(data.location)
-      this.setState({ selectedIssue: data._id, mapCenter: {
-        lat: Number(data.location.lat),
-        lng: Number(data.location.lng)
-      } });
+      console.log(data.location);
+      this.setState({
+        selectedIssue: data._id,
+        mapCenter: {
+          lat: Number(data.location.lat),
+          lng: Number(data.location.lng)
+        }
+      });
     };
 
     // Dismiss Message action
     const dismissMessage = () => {
       this.setState({ messageVisible: false });
+    };
+
+    // Delete issue on click
+    const issuesDeleteClick = async data => {
+      if (confirm(`Are you sure you want to delete the issue ${data.title}?`)) {
+        try {
+          const issuesDelRes = await fetch(
+            `${API_HOST}/api/issues?id=${data._id}`,
+            {
+              method: "DELETE"
+            }
+          );
+
+          if (!issuesDelRes.ok) {
+            throw new Error();
+          }
+          const issuesRes = await fetch(`${API_HOST}/api/issues`);
+          if (!issuesRes.ok) {
+            throw new Error();
+          }
+          const issuesResData = await issuesRes.json();
+          this.setState({
+            issues: issuesResData.reverse()
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      }
     };
 
     // Render page conditionally
@@ -616,11 +647,12 @@ class IndexPage extends React.Component<IProps, IState> {
               }
               activeNav={this.state.issuesNav}
               navOnClick={issuesNavClick}
-              openIssues={this.state.openIssues}
-              resolvedIssues={this.state.resolvedIssues}
+              openIssues={this.state.issues.filter(i => i.resolved === "false").length}
+              resolvedIssues={this.state.issues.filter(i => i.resolved === "true").length}
               user={this.state.currentUser}
               editClick={issuesEditClick}
               cardClick={issuesCardClick}
+              deleteClick={issuesDeleteClick}
             />
           </div>
           <div className="issues_modal">

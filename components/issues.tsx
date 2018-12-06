@@ -56,7 +56,7 @@ export const Issues = props => (
                 <div className="ui buttons right floated">
                 {props.user._id === issue.author._id &&
                 <>
-                  <Button animated="vertical" negative>
+                  <Button animated="vertical" negative onClick={(data) => props.deleteClick(issue)}>
                     <Button.Content hidden>Delete</Button.Content>
                     <Button.Content visible>
                       <Icon name="trash" />
