@@ -23,6 +23,10 @@ class IndexPage extends React.Component<IProps, IState> {
       lat: 37.78768,
       lng: -122.41094
     },
+    mapCenter: {
+      lat: 37.78768,
+      lng: -122.41094
+    },
     issues: [
       {
         title: "A test Issue",
@@ -157,6 +161,10 @@ class IndexPage extends React.Component<IProps, IState> {
           currentLocation: {
             lat: position.coords.latitude,
             lng: position.coords.longitude
+          },
+          mapCenter: {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
           }
         });
       });
@@ -183,7 +191,7 @@ class IndexPage extends React.Component<IProps, IState> {
         throw new Error();
       }
       const citiesData = await citiesRes.json();
-      const issuesData = await issuesRes.json();
+      const issuesData = (await issuesRes.json()).reverse();
       const currentUser = await currentUserRes.json();
       citiesData.map(i => {
         this.setState({
@@ -225,12 +233,16 @@ class IndexPage extends React.Component<IProps, IState> {
         currentIssue: {
           location: location,
           author: this.state.currentUser._id,
-          city: this.state.currentUser.city
+          city: this.state.currentUser.city,
+          title: "",
+          description: ""
         },
         modalOpen: true,
         modalTitle: "New Issue",
         selectedIssue: "",
-        messageVisible: false
+        messageVisible: false,
+        currentIssueDescError: false,
+        currentIssueTitleError: false
       });
     };
 
@@ -268,12 +280,71 @@ class IndexPage extends React.Component<IProps, IState> {
 
     // IssuesModal Close click
     const modalClose = () => {
-      this.setState({ modalOpen: false });
+      this.setState({
+        modalOpen: false,
+        currentIssueDescError: false,
+        currentIssueTitleError: false
+      });
     };
 
     // IssuesModal Submit click
-    const modalSubmit = () => {
+    const modalSubmit = async () => {
       console.log(this.state.currentIssue);
+      if (this.state.currentIssue.hasOwnProperty("resolved")) {
+        // edit issue
+        try {
+          
+          const editIssueRes = await fetch(`${API_HOST}/api/issues?id=${this.state.currentIssue._id}`, {
+            method: "PUT",
+            body: JSON.stringify(this.state.currentIssue)
+          });
+          console.log(JSON.stringify(this.state.currentIssue))
+          if (!editIssueRes.ok) {
+            throw new Error();
+          }
+          const editIssueResData = await editIssueRes.json();
+          console.log(editIssueResData);
+          const issuesRes = await fetch(`${API_HOST}/api/issues`);
+          if (!issuesRes.ok) {
+            throw new Error();
+          }
+          const issuesResData = await issuesRes.json();
+          this.setState({
+            issues: issuesResData.reverse()
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        // new issue
+        await this.setState({
+          currentIssue: {
+            ...this.state.currentIssue,
+            resolved: "false"
+          }
+        });
+        try {
+          const newIssueRes = await fetch(`${API_HOST}/api/issues`, {
+            method: "POST",
+            body: JSON.stringify(this.state.currentIssue)
+          });
+          if (!newIssueRes.ok) {
+            throw new Error();
+          }
+          const newIssueResData = await newIssueRes.json();
+          console.log(newIssueResData);
+          const issuesRes = await fetch(`${API_HOST}/api/issues`);
+          if (!issuesRes.ok) {
+            throw new Error();
+          }
+          const issuesResData = await issuesRes.json();
+          this.setState({
+            issues: issuesResData.reverse()
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      }
       this.setState({ modalOpen: false });
     };
 
@@ -439,7 +510,11 @@ class IndexPage extends React.Component<IProps, IState> {
 
     // Issues card on click
     const issuesCardClick = data => {
-      this.setState({ selectedIssue: data._id });
+      console.log(data.location)
+      this.setState({ selectedIssue: data._id, mapCenter: {
+        lat: Number(data.location.lat),
+        lng: Number(data.location.lng)
+      } });
     };
 
     // Dismiss Message action
@@ -515,7 +590,7 @@ class IndexPage extends React.Component<IProps, IState> {
                 containerElement={<div className="map" />}
                 mapElement={<div className="map" />}
                 zoom={15}
-                center={this.state.currentLocation}
+                center={this.state.mapCenter}
                 currentLocation={this.state.currentLocation}
                 issues={
                   (this.state.issuesNav == "all" && this.state.issues) ||

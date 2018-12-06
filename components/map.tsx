@@ -46,8 +46,8 @@ const Markers = props => (
 export const Map = withScriptjs(
   withGoogleMap(props => (
     <GoogleMap
-      defaultZoom={props.zoom}
-      defaultCenter={props.center}
+      zoom={props.zoom}
+      center={props.center}
       onClick={c => {
         props.onClick(c.latLng);
       }}
