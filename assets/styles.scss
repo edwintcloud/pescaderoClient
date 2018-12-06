@@ -83,6 +83,7 @@ body {
     margin: 0 !important;
     .card {
       margin: 5px 10px !important;
+      // max-height: 200px;
 
       img {
         height: 35px !important;
@@ -151,7 +152,7 @@ body {
 .signup_container {
   background-color: white;
   width: 400px;
-  height: 275px;
+  height: 350px;
   border-radius: 10px;
   box-shadow: 0px 0px 20px -4px rgba(0,0,0,0.75);
   display: flex;
@@ -170,4 +171,24 @@ body {
 .signup_container {
   width: 500px!important;
   height: 500px!important;
+}
+
+// Modal Styles
+.issues_modal {
+  .disabled {
+    opacity: unset!important;
+    label {
+      opacity: unset!important;
+    }
+  }
+}
+
+// Map Tip Style
+.map_tip {
+  position: absolute!important;
+  top: $navbar-height;
+  left: 14vw;
+  @media (max-width: $break-mobile) {
+    display: none;
+  }
 }

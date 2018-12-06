@@ -19,19 +19,9 @@ interface IState {}
 
 class IndexPage extends React.Component<IProps, IState> {
   state = {
-    markers: {
-      currentLocation: {
-        lat: 37.78768,
-        lng: -122.41094
-      },
-      issues: [
-        {
-          location: {
-            lat: 37.7865,
-            lng: -122.41094
-          }
-        }
-      ]
+    currentLocation: {
+      lat: 37.78768,
+      lng: -122.41094
     },
     issues: [
       {
@@ -154,10 +144,27 @@ class IndexPage extends React.Component<IProps, IState> {
       { text: "San Jose, CA (USA)", value: "shos" }
     ],
     loading: true,
-    loadingError: ""
+    loadingError: "",
+    selectedIssue: "",
+    messageVisible: true,
+    loginError: ""
+  };
+
+  getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        this.setState({
+          currentLocation: {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          }
+        });
+      });
+    }
   };
 
   async componentDidMount() {
+    this.getCurrentLocation();
     // initialize state
     this.setState({ loading: true });
     this.setState({ loadingError: "" });
@@ -209,15 +216,30 @@ class IndexPage extends React.Component<IProps, IState> {
 
   render() {
     // Add marker to map component
-    const mapAddMarker = location => {
-      console.log(location.lat());
-      console.log(location.lng());
-      this.setState({ modalOpen: true });
+    const mapAddMarker = event => {
+      const location = {
+        lat: String(event.lat()),
+        lng: String(event.lng())
+      };
+      this.setState({
+        currentIssue: {
+          location: location,
+          author: this.state.currentUser._id,
+          city: this.state.currentUser.city
+        },
+        modalOpen: true,
+        modalTitle: "New Issue",
+        selectedIssue: "",
+        messageVisible: false
+      });
     };
 
     // Issues NavBar onClick method
     const issuesNavClick = (e, { name }) => {
-      this.setState({ issuesNav: name });
+      this.setState({
+        issuesNav: name,
+        selectedIssue: ""
+      });
     };
 
     // IssuesModal title and description on change method
@@ -247,11 +269,11 @@ class IndexPage extends React.Component<IProps, IState> {
     // IssuesModal Close click
     const modalClose = () => {
       this.setState({ modalOpen: false });
-      console.log("close");
     };
 
     // IssuesModal Submit click
     const modalSubmit = () => {
+      console.log(this.state.currentIssue);
       this.setState({ modalOpen: false });
     };
 
@@ -271,7 +293,8 @@ class IndexPage extends React.Component<IProps, IState> {
       this.setState({
         currentUser: {
           ...this.state.currentUser,
-          [data.name]: data.value
+          [data.name]: data.value,
+          loginError: ""
         }
       });
     };
@@ -287,17 +310,23 @@ class IndexPage extends React.Component<IProps, IState> {
         if (!loginRes.ok) {
           throw new Error();
         }
+        const loginResData = await loginRes.json();
+        if (loginResData.hasOwnProperty("error")) {
+          this.setState({ loginError: loginResData.error });
+          return;
+        }
         const currentUserRes = await fetch(`${API_HOST}/api/users/current`, {
           credentials: "include"
         });
         if (!currentUserRes.ok) {
           throw new Error();
         }
-        this.setState({ currentUser: await currentUserRes.json() });
+        const currentUserResData = await currentUserRes.json();
+        this.setState({ currentUser: currentUserResData });
       } catch (e) {
         console.log(e);
       }
-      this.setState({ loginOpen: false });
+      this.setState({ loginOpen: false, loginError: "" });
     };
 
     // Signup inputs on change
@@ -342,12 +371,81 @@ class IndexPage extends React.Component<IProps, IState> {
 
     // Logout button on click
     const logoutUser = async () => {
-      const logoutUserRes = await fetch(`${API_HOST}/api/users/logout`, {
-        method: "POST",
-        credentials: "include"
+      try {
+        const logoutUserRes = await fetch(`${API_HOST}/api/users/logout`, {
+          method: "POST",
+          credentials: "include"
+        });
+
+        if (!logoutUserRes.ok) {
+          throw new Error();
+        }
+        const currentUserRes = await fetch(`${API_HOST}/api/users/current`, {
+          credentials: "include"
+        });
+        if (!currentUserRes.ok) {
+          throw new Error();
+        }
+        this.setState({ currentUser: await currentUserRes.json() });
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    // Marker on click
+    const markerClick = (event, data) => {
+      if (data == undefined) {
+        const location = {
+          lat: String(event.latLng.lat()),
+          lng: String(event.latLng.lng())
+        };
+        this.setState({
+          currentIssue: {
+            location: location,
+            author: this.state.currentUser._id,
+            city: this.state.currentUser.city
+          },
+          modalOpen: true,
+          modalTitle: "New Issue",
+          selectedIssue: ""
+        });
+      } else {
+        this.setState({
+          currentIssue: {
+            ...data,
+            author: data.author._id,
+            city: data.author.city
+          },
+          modalOpen: true,
+          modalTitle: "Edit Issue",
+          selectedIssue: data._id
+        });
+      }
+    };
+
+    // Issues edit button on click
+    const issuesEditClick = data => {
+      this.setState({
+        currentIssue: {
+          ...data,
+          author: data.author._id,
+          city: data.author.city
+        },
+        modalOpen: true,
+        modalTitle: "Edit Issue",
+        selectedIssue: ""
       });
-      // TODO: finish
-    }
+    };
+
+    // Issues card on click
+    const issuesCardClick = data => {
+      this.setState({ selectedIssue: data._id });
+    };
+
+    // Dismiss Message action
+    const dismissMessage = () => {
+      this.setState({ messageVisible: false });
+    };
 
     // Render page conditionally
     if (this.state.loading) {
@@ -371,6 +469,7 @@ class IndexPage extends React.Component<IProps, IState> {
             passwordValue={this.state.currentUser.password}
             emailValue={this.state.currentUser.email}
             inputsChange={loginInputsChange}
+            loginError={this.state.loginError}
           />
         );
       } else if (this.state.signupOpen) {
@@ -402,37 +501,61 @@ class IndexPage extends React.Component<IProps, IState> {
     } else {
       return (
         <div className="base_container">
-          <NavBar user={this.state.currentUser} logoutClick={logoutUser} />
+          <NavBar
+            user={this.state.currentUser}
+            logoutClick={logoutUser}
+            dismissMessage={dismissMessage}
+            messageVisible={this.state.messageVisible}
+          />
           <div className="map_container">
-            <Map
-              googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
-              loadingElement={<div className="map" />}
-              containerElement={<div className="map" />}
-              mapElement={<div className="map" />}
-              zoom={15}
-              center={this.state.markers.currentLocation}
-              markers={this.state.markers}
-              onClick={mapAddMarker}
-            />
+            {navigator.onLine && (
+              <Map
+                googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
+                loadingElement={<div className="map" />}
+                containerElement={<div className="map" />}
+                mapElement={<div className="map" />}
+                zoom={15}
+                center={this.state.currentLocation}
+                currentLocation={this.state.currentLocation}
+                issues={
+                  (this.state.issuesNav == "all" && this.state.issues) ||
+                  (this.state.issuesNav == "open" &&
+                    this.state.issues.filter(i => i.resolved === "false")) ||
+                  (this.state.issuesNav == "resolved" &&
+                    this.state.issues.filter(i => i.resolved === "true"))
+                }
+                onClick={mapAddMarker}
+                markerClick={markerClick}
+                selectedIssue={this.state.selectedIssue}
+              />
+            )}
           </div>
           <div className="issues_container">
             <Issues
-              issues={this.state.issues}
+              issues={
+                (this.state.issuesNav == "all" && this.state.issues) ||
+                (this.state.issuesNav == "open" &&
+                  this.state.issues.filter(i => i.resolved === "false")) ||
+                (this.state.issuesNav == "resolved" &&
+                  this.state.issues.filter(i => i.resolved === "true"))
+              }
               activeNav={this.state.issuesNav}
               navOnClick={issuesNavClick}
               openIssues={this.state.openIssues}
               resolvedIssues={this.state.resolvedIssues}
               user={this.state.currentUser}
+              editClick={issuesEditClick}
+              cardClick={issuesCardClick}
             />
           </div>
           <div className="issues_modal">
             <IssuesModal
               open={this.state.modalOpen}
               title={this.state.modalTitle}
-              issueTitleValue={this.state.currentIssue.title}
+              currentIssue={this.state.currentIssue}
+              user={this.state.currentUser}
               issueTitleValueChange={currentIssueChange}
               issueTitleValueError={this.state.currentIssueTitleError}
-              issueDescValue={this.state.currentIssue.description}
               issueDescValueChange={currentIssueChange}
               issueDescValueError={this.state.currentIssueDescError}
               cancelClick={modalClose}

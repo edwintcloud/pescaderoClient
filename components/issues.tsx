@@ -30,7 +30,7 @@ export const Issues = props => (
         </div>
         <div className="issues_cards cards ui">
           {props.issues.map((issue, index) => (
-            <Card fluid key={index}>
+            <Card fluid key={index} onClick={(data) => props.cardClick(issue)}>
               <Card.Content>
                 {(issue.author.avatar && (
                   <Image
@@ -54,19 +54,25 @@ export const Issues = props => (
               </Card.Content>
               <Card.Content extra>
                 <div className="ui buttons right floated">
+                {props.user._id === issue.author._id &&
+                <>
                   <Button animated="vertical" negative>
                     <Button.Content hidden>Delete</Button.Content>
                     <Button.Content visible>
                       <Icon name="trash" />
                     </Button.Content>
                   </Button>
-                  <Button animated="vertical" primary>
+                  <Button animated="vertical" primary onClick={(data) => props.editClick(issue)}>
                     <Button.Content hidden>Edit</Button.Content>
                     <Button.Content visible>
                       <Icon name="pencil" />
                     </Button.Content>
                   </Button>
+                  </>
+                }
+                {props.user._id !== issue.author._id &&
                   <Button positive>Resolve</Button>
+                }
                 </div>
               </Card.Content>
             </Card>

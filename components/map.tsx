@@ -8,28 +8,40 @@ import { mapStyles } from "./mapStyles";
 
 const Markers = props => (
   <>
-    {props.markers.currentLocation && (
-      <Marker position={props.markers.currentLocation} />
+    {props.currentLocation && (
+      <Marker position={props.currentLocation} onClick={props.onClick} />
     )}
-    {props.markers.issues &&
-      props.markers.issues.map((issue, index) => (
+    {props.issues &&
+      props.issues.map((issue, index) => (
         <Marker
           title={issue.title}
           key={index}
-          position={issue.location}
-          icon={{
-            path: window.google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-            strokeColor: "black",
-            fillColor: "red",
-            fillOpacity: 0.7,
-            strokeWeight: 2,
-            scale: 7
+          position={{
+            lat: Number(issue.location.lat),
+            lng: Number(issue.location.lng)
           }}
+          icon={
+            props.selectedIssue == issue._id && {
+              path: window.google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+              strokeColor: "blue",
+              fillColor: "red",
+              fillOpacity: 0.7,
+              strokeWeight: 2,
+              scale: 7
+            } || {
+              path: window.google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+              strokeColor: "black",
+              fillColor: "red",
+              fillOpacity: 0.7,
+              strokeWeight: 2,
+              scale: 7
+            }
+          }
+          onClick={(event, data) => props.onClick(event, issue)}
         />
       ))}
   </>
 );
-
 
 export const Map = withScriptjs(
   withGoogleMap(props => (
@@ -41,8 +53,12 @@ export const Map = withScriptjs(
       }}
       options={{ styles: mapStyles }}
     >
-      <Markers markers={props.markers} />
-      
+      <Markers
+        currentLocation={props.currentLocation}
+        issues={props.issues}
+        onClick={props.markerClick}
+        selectedIssue={props.selectedIssue}
+      />
     </GoogleMap>
   ))
 );
