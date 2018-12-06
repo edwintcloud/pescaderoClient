@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Loader } from "semantic-ui-react";
 import {
   NavBar,
   Map,
@@ -11,6 +11,7 @@ import {
 } from "../components";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyDDwrgWKkdd5dT7ftnPaccBM6zgRb5R90g";
+const API_HOST = "http://localhost:5000";
 
 interface IProps {}
 
@@ -149,13 +150,55 @@ class IndexPage extends React.Component<IProps, IState> {
     signupPasswordInvalid: false,
     signupConfirmPasswordInvalid: false,
     cities: [
-      {text: "San Francisco, CA (USA)", value: "a3r3sdf"},
-      {text: "San Jose, CA (USA)", value: "shos"}
-    ]
+      { text: "San Francisco, CA (USA)", value: "a3r3sdf" },
+      { text: "San Jose, CA (USA)", value: "shos" }
+    ],
+    loading: true,
+    loadingError: ""
   };
 
-  componentWillMount() {
-    console.log(this.state.currentUser)
+  async componentDidMount() {
+    // initialize state
+    this.setState({ loading: true });
+    this.setState({ loadingError: "" });
+    this.setState({ cities: [] });
+    this.setState({ issues: [] });
+
+    // fetch data from api and update state
+    try {
+      const citiesRes = await fetch(`${API_HOST}/api/cities`);
+      const issuesRes = await fetch(`${API_HOST}/api/issues`);
+      if (!citiesRes.ok || !issuesRes.ok) {
+        throw new Error();
+      }
+      const citiesData = await citiesRes.json();
+      const issuesData = await issuesRes.json();
+      citiesData.map(i => {
+        this.setState({
+          cities: [
+            ...this.state.cities,
+            {
+              text: `${i.name}, ${i.state} (${i.country})`,
+              value: i._id
+            }
+          ]
+        });
+      });
+      this.setState({issues:issuesData});
+      this.setState({
+        openIssues: issuesData.filter(i => i.resolved === "false").length
+      });
+      this.setState({
+        resolvedIssues: issuesData.filter(i => i.resolved === "true").length
+      });
+      this.setState({ loading: false });
+    } catch (e) {
+      this.setState({ loading: false });
+      this.setState({
+        loadingError:
+          "Website is currently undergoing maintenance. Please check back later!"
+      });
+    }
   }
 
   render() {
@@ -273,8 +316,20 @@ class IndexPage extends React.Component<IProps, IState> {
       console.log(this.state.currentUser.password);
       this.setState({ loginOpen: false });
     };
-
-    if (this.state.currentUser) {
+    if (this.state.loading) {
+      return (
+        <div className="landing_container">
+          <Loader active inline="centered" />
+          <p style={{ marginTop: "10px" }}>Loading please wait...</p>
+        </div>
+      );
+    } else if (this.state.loadingError && !this.state.loading) {
+      return (
+        <div className="landing_container">
+          <h1 style={{ color: "red" }}>{this.state.loadingError}</h1>
+        </div>
+      );
+    } else if (!this.state.currentUser) {
       if (this.state.loginOpen) {
         return (
           <Login
