@@ -491,7 +491,8 @@ class IndexPage extends React.Component<IProps, IState> {
         });
         const card = document.getElementById(data._id);
         card.scrollIntoView();
-        window.setTimeout(() => card.focus(), 0)
+        card.parentElement.scrollBy(0, -20);
+        card.focus();
          
       }
     };

@@ -30,7 +30,7 @@ export const Issues = props => (
         </div>
         <div className="issues_cards cards ui">
           {props.issues.map((issue, index) => (
-            <Card fluid key={index} id={issue._id} tabindex={index} onFocus={(data) => props.cardClick(issue)}>
+            <Card fluid key={index} id={issue._id} tabIndex={index} onFocus={(data) => props.cardClick(issue)}>
               <Card.Content>
                 {(issue.author.avatar && (
                   <Image
