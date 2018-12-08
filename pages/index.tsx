@@ -365,8 +365,8 @@ class IndexPage extends React.Component<IProps, IState> {
         currentUser: {
           ...this.state.currentUser,
           [data.name]: data.value,
-          loginError: ""
-        }
+        },
+        loginError: ""
       });
     };
 

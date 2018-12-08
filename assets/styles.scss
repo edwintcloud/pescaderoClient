@@ -196,3 +196,9 @@ body {
     display: none;
   }
 }
+
+// semantic css fixes
+.top.attached.message {
+  margin-top: -50px!important;
+  margin-bottom: 10px!important;
+}

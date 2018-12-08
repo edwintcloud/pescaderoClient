@@ -4,7 +4,10 @@ export const Login = props => (
   <div className="landing_container">
     <h1 className="login_title">Log In</h1>
     <div className="login_container">
-      <Form className="login_form" onSubmit={props.onSubmit} error>
+    {props.loginError != "" && (
+          <Message error content={props.loginError} attached='top' />
+        )}
+      <Form className="login_form attached" onSubmit={props.onSubmit}>
         <Form.Input
           label="Email"
           placeholder="Email"
@@ -21,11 +24,9 @@ export const Login = props => (
           onChange={props.inputsChange}
           value={props.passwordValue}
         />
-        {props.loginError !== "" && (
-          <Message error header="Unable to Login" content={props.loginError} />
-        )}
         <Button className="landing_button">Login</Button>
       </Form>
+      
     </div>
   </div>
 );
