@@ -51,7 +51,6 @@ export const Map = withScriptjs(
       onClick={c => {
         props.onClick(c.latLng);
       }}
-      options={{ styles: mapStyles }}
     >
       <Markers
         currentLocation={props.currentLocation}

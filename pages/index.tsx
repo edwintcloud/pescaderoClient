@@ -487,10 +487,12 @@ class IndexPage extends React.Component<IProps, IState> {
             author: data.author._id,
             city: data.author.city
           },
-          modalOpen: true,
-          modalTitle: "Edit Issue",
           selectedIssue: data._id
         });
+        const card = document.getElementById(data._id);
+        card.scrollIntoView();
+        window.setTimeout(() => card.focus(), 0)
+         
       }
     };
 
