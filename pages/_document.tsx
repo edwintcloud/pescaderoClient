@@ -6,7 +6,7 @@ export default class MyDocument extends Document {
       <html>
         <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+        <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8"/>
         <meta name="description" content="Project Pescadero - Changing the world, one small act of kindness at a time." />
         <meta name="keywords" content="project,pescadero,issues,neighborhood,change,society,trash"/>
         <meta name="robots" content="index,follow"/>
