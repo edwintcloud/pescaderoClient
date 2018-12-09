@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "name": "project-pescadero",
+  "alias": "project-pescadero.now.sh",
   "builds": [
     { "src": "package.json", "use": "@now/next" }
   ]

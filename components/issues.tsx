@@ -30,7 +30,13 @@ export const Issues = props => (
         </div>
         <div className="issues_cards cards ui">
           {props.issues.map((issue, index) => (
-            <Card fluid key={index} id={issue._id} tabIndex={index} onFocus={(data) => props.cardClick(issue)}>
+            <Card
+              fluid
+              key={index}
+              id={issue._id}
+              tabIndex={index}
+              onFocus={data => props.cardClick(issue)}
+            >
               <Card.Content>
                 {(issue.author.avatar && (
                   <Image
@@ -48,31 +54,53 @@ export const Issues = props => (
                   />
                 )}
 
-                <Card.Header onClick={(data) => props.cardClick(issue)}>{issue.title}</Card.Header>
+                <Card.Header onClick={data => props.cardClick(issue)}>
+                  {issue.title}
+                </Card.Header>
                 <Card.Meta>by: {issue.author.firstName}</Card.Meta>
                 <Card.Description>{issue.description}</Card.Description>
               </Card.Content>
               <Card.Content extra>
+                {issue.resolved === "true" &&
+                  issue.resolvedBy.firstName !== "" && issue.resolvedBy.lastName !== "" && (
+                    <span className="resolved_text">
+                      Resolved By: {`${issue.resolvedBy.firstName} ${issue.resolvedBy.lastName}`}
+                    </span>
+                  )}
                 <div className="ui buttons right floated">
-                {props.user._id === issue.author._id &&
-                <>
-                  <Button animated="vertical" negative onClick={(data) => props.deleteClick(issue)}>
-                    <Button.Content hidden>Delete</Button.Content>
-                    <Button.Content visible>
-                      <Icon name="trash" />
-                    </Button.Content>
-                  </Button>
-                  <Button animated="vertical" primary onClick={(data) => props.editClick(issue)}>
-                    <Button.Content hidden>Edit</Button.Content>
-                    <Button.Content visible>
-                      <Icon name="pencil" />
-                    </Button.Content>
-                  </Button>
-                  </>
-                }
-                {props.user._id !== issue.author._id &&
-                  <Button positive>Resolve</Button>
-                }
+                  {props.user._id === issue.author._id && issue.resolved === "false" && (
+                    <>
+                      <Button
+                        animated="vertical"
+                        negative
+                        onClick={data => props.deleteClick(issue)}
+                      >
+                        <Button.Content hidden>Delete</Button.Content>
+                        <Button.Content visible>
+                          <Icon name="trash" />
+                        </Button.Content>
+                      </Button>
+                      <Button
+                        animated="vertical"
+                        primary
+                        onClick={data => props.editClick(issue)}
+                      >
+                        <Button.Content hidden>Edit</Button.Content>
+                        <Button.Content visible>
+                          <Icon name="pencil" />
+                        </Button.Content>
+                      </Button>
+                    </>
+                  )}
+                  {props.user._id !== issue.author._id &&
+                    issue.resolved === "false" && (
+                      <Button
+                        positive
+                        onClick={data => props.resolveClick(issue)}
+                      >
+                        Resolve
+                      </Button>
+                    )}
                 </div>
               </Card.Content>
             </Card>

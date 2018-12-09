@@ -3,10 +3,9 @@ $break-mobile: 700px;
 $navbar-height: 60px;
 
 html,
-body {
+body, #__nexxt {
   height: 100%;
   margin: 0;
-  //  background-color: black;
   font-size: 1em !important;
 }
 
@@ -81,9 +80,15 @@ body {
     height: calc(83.8vh - #{$navbar-height});
     overflow-y: auto;
     margin: 0 !important;
+    max-width: 50vw;
     .card {
       margin: 5px 10px !important;
-      // max-height: 200px;
+      max-height: 250px;
+      .description {
+        word-break: break-all;
+        overflow-y: auto;
+        max-height: 105px;
+      }
 
       img {
         height: 35px !important;
@@ -108,13 +113,17 @@ body {
       margin-left: 15px;
     }
   }
+
+  .resolved_text {
+    color: #17AB39;
+  }
 }
 
 // Landing page styles
 .landing_container {
   background-color: #e9ecef;
-  height: 100vh;
   display: flex;
+  min-height: 100vh;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -156,7 +165,7 @@ body {
 .signup_container {
   background-color: white;
   width: 400px;
-  height: 350px;
+  height: auto;
   border-radius: 10px;
   box-shadow: 0px 0px 20px -4px rgba(0,0,0,0.75);
   display: flex;
@@ -167,6 +176,9 @@ body {
   .signup_form {
     width: 90%;
   }
+  .form:first-child {
+    margin-top: 10px!important;
+  }
   button {
     margin: 10px 0!important;
     float: right;
@@ -174,7 +186,7 @@ body {
 }
 .signup_container {
   width: 500px!important;
-  height: 500px!important;
+  min-height: 400px!important;
 }
 
 // Modal Styles
@@ -198,7 +210,7 @@ body {
 }
 
 // semantic css fixes
-.top.attached.message {
-  margin-top: -50px!important;
-  margin-bottom: 10px!important;
+.bottom.attached.message {
+  margin: 0 20px 10px 20px!important;
+  border-radius: 5px!important;
 }

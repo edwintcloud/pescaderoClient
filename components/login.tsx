@@ -4,9 +4,6 @@ export const Login = props => (
   <div className="landing_container">
     <h1 className="login_title">Log In</h1>
     <div className="login_container">
-    {props.loginError != "" && (
-          <Message error content={props.loginError} attached='top' />
-        )}
       <Form className="login_form attached" onSubmit={props.onSubmit}>
         <Form.Input
           label="Email"
@@ -24,9 +21,36 @@ export const Login = props => (
           onChange={props.inputsChange}
           value={props.passwordValue}
         />
-        <Button className="landing_button">Login</Button>
+
+        <Button
+          className="landing_button"
+          type="submit"
+          disabled={
+            !props.emailValue ||
+            (props.emailValue && props.emailValue.length < 2) ||
+            (!props.passwordValue ||
+              (props.passwordValue && props.passwordValue.length < 2))
+          }
+        >
+          Login
+        </Button>
+        <Button
+          className="landing_button left floated"
+          onClick={props.loadLandingClick}
+        >
+          Back
+        </Button>
       </Form>
-      
+      {props.loginError != "" && (
+        <Message error attached="bottom">
+          {(props.loginError != "not found" && props.loginError) || (
+            <>
+              Account does not exist, please{" "}
+              <a onClick={props.signupClick}>signup</a>{" "}
+            </>
+          )}
+        </Message>
+      )}
     </div>
   </div>
 );
