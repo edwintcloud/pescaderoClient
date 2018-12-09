@@ -37,7 +37,12 @@ export const NavBar = props => (
             {(props.user.avatar && (
               <Image avatar src={props.user.avatar} />
             )) || <Image avatar src="https://via.placeholder.com/100" />}
+            <div className="right_flex">
             <span>{props.user.firstName}</span>
+            <input id="avatar" name="avatar" type="file" className="file" accept=".png,.jpg,.jpeg" onChange={props.fileChanged}></input>
+            <label htmlFor="avatar" className="file">Change Avatar</label>
+            
+            </div>
           </Dropdown.Header>
           <DropdownDivider />
           <Button negative onClick={props.logoutClick}>

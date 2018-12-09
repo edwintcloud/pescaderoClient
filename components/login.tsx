@@ -12,6 +12,7 @@ export const Login = props => (
           onChange={props.inputsChange}
           name="email"
           value={props.emailValue}
+          autoComplete="email"
         />
         <Form.Input
           label="Password"

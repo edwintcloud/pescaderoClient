@@ -13,6 +13,7 @@ export const Signup = props => (
             onChange={props.inputsChange}
             name="firstName"
             value={props.firstNameValue}
+            autoComplete="given-name"
           />
           <Form.Input
             label="Last Name"
@@ -21,6 +22,7 @@ export const Signup = props => (
             onChange={props.inputsChange}
             name="lastName"
             value={props.lastNameValue}
+            autoComplete="family-name"
           />
         </Form.Group>
         <Form.Input
@@ -31,6 +33,7 @@ export const Signup = props => (
           name="email"
           value={props.emailValue}
           error={props.emailInvalid}
+          autoComplete="email"
         />
         <Form.Input
           label="Password"
@@ -55,7 +58,6 @@ export const Signup = props => (
           onChange={props.inputsChange}
           name="city"
           options={props.cityOptions}
-          defaultValue={props.cityOptions[0].value}
           value={props.cityValue}
         />
         <Button

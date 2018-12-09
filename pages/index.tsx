@@ -532,6 +532,63 @@ class IndexPage extends React.Component<IProps, IState> {
       }
     };
 
+    // upload avatar
+    const uploadAvatar = async (event) => {
+      const file = event.target.files[0]
+      try {
+        // get base64 from api
+        const data = new FormData();
+        data.append("avatar", file);
+        data.append("name", this.state.currentUser._id);
+        data.append("quality", "90");
+        const avatarRes = await fetch(
+          process.env.PHOTO_API_URL,
+          {
+            method: "POST",
+            headers: {
+              'Authorization': `Bearer ${process.env.PHOTO_API_KEY}`,
+            },
+            body: data
+          }
+        );
+        if (!avatarRes.ok) {
+          throw new Error();
+        }
+        const avatarResData = await avatarRes.json();
+        this.setState({
+          currentUser: {
+            ...this.state.currentUser,
+            avatar: avatarResData.base64
+          }
+        });
+        // update user in database
+        const updates = {
+          avatar: avatarResData.base64
+        };
+        const userUpdateRes = await fetch(
+          `${process.env.BACKEND_URL}/api/users?id=${this.state.currentUser._id}`,
+          {
+            method: "PUT",
+            body: JSON.stringify(updates)
+          }
+        );
+        if (!userUpdateRes.ok) {
+          throw new Error();
+        }
+        // update issues to show new avatar
+        const issuesRes = await fetch(`${process.env.BACKEND_URL}/api/issues`);
+        if (!issuesRes.ok) {
+          throw new Error();
+        }
+        const issuesResData = await issuesRes.json();
+        this.setState({
+          issues: issuesResData.reverse()
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
     // Render page conditionally
     if (this.state.loading) {
       return (
@@ -597,6 +654,7 @@ class IndexPage extends React.Component<IProps, IState> {
             logoutClick={logoutUser}
             dismissMessage={dismissMessage}
             messageVisible={this.state.messageVisible}
+            fileChanged={uploadAvatar}
           />
           <div className="map_container">
             {navigator.onLine && (
