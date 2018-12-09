@@ -4,7 +4,8 @@ import {
   Image,
   DropdownDivider,
   Button,
-  Message
+  Message,
+  Icon
 } from "semantic-ui-react";
 
 export const NavBar = props => (
@@ -20,6 +21,7 @@ export const NavBar = props => (
         color="blue"
       />
     )}
+    <Icon link name={`arrow ${props.arrowDirection}`} size="big" className="down_arrow" circular onClick={props.arrowClick} />
     {props.user && (
       <Dropdown
         icon={null}

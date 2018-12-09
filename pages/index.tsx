@@ -43,7 +43,8 @@ class IndexPage extends React.Component<IProps, IState> {
     selectedIssue: "",
     messageVisible: true,
     loginError: "",
-    signupError: ""
+    signupError: "",
+    arrowDirection: "down"
   };
 
   getCurrentLocation = () => {
@@ -589,6 +590,17 @@ class IndexPage extends React.Component<IProps, IState> {
       }
     };
 
+    // arrow nav on click for mobile
+    const arrowClick = () => {
+      if(this.state.arrowDirection == "down") {
+        window.scroll(0, window.document.body.scrollHeight);
+        this.setState({arrowDirection:"up"});
+      } else {
+        window.scroll(0, 0);
+        this.setState({arrowDirection:"down"});
+      }
+    };
+
     // Render page conditionally
     if (this.state.loading) {
       return (
@@ -655,6 +667,8 @@ class IndexPage extends React.Component<IProps, IState> {
             dismissMessage={dismissMessage}
             messageVisible={this.state.messageVisible}
             fileChanged={uploadAvatar}
+            arrowClick={arrowClick}
+            arrowDirection={this.state.arrowDirection}
           />
           <div className="map_container">
             {navigator.onLine && (
