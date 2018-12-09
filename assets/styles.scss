@@ -161,6 +161,7 @@ body, #__nexxt {
 .signup_container {
   background-color: white;
   width: 400px;
+  max-width: 98vw;
   height: auto;
   border-radius: 10px;
   box-shadow: 0px 0px 20px -4px rgba(0,0,0,0.75);
@@ -277,4 +278,14 @@ label.file:hover {
   .issues_cards {
     max-height: 70vh!important;
   }
+  .landing_title,
+  .landing_subtitle {
+    padding: 0 10px!important;
+    text-align: center;
+  }
+  .landing_title {
+    line-height: 1;
+    font-size: 4em!important;
+  }
+
 }
