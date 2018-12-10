@@ -9,6 +9,7 @@ import {
   Login,
   Signup
 } from "../components";
+import 'isomorphic-unfetch';
 
 interface IProps {}
 
@@ -320,7 +321,7 @@ class IndexPage extends React.Component<IProps, IState> {
           throw new Error();
         }
         const currentUserResData = await currentUserRes.json();
-        this.setState({ currentUser: currentUserResData });
+        await this.setState({ currentUser: currentUserResData, loginOpen: false, loginError: "" });
       } catch (e) {
         console.log(e);
       }
@@ -612,7 +613,7 @@ class IndexPage extends React.Component<IProps, IState> {
     } else if (this.state.loadingError && !this.state.loading) {
       return (
         <div className="landing_container">
-          <h1 style={{ color: "red" }}>{this.state.loadingError}</h1>
+          <h1 style={{ color: "red", textAlign:'center' }}>{this.state.loadingError}</h1>
         </div>
       );
     } else if (!this.state.currentUser.hasOwnProperty("_id")) {

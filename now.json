@@ -4,5 +4,8 @@
   "alias": "project-pescadero.now.sh",
   "builds": [
     { "src": "package.json", "use": "@now/next" }
+  ],
+  "routes": [
+    { "src": "/api", "dest": "https://project-pescadero.herokuapp.com/api" }
   ]
 }

@@ -8,7 +8,8 @@
     "dev": "next",
     "build": "next build",
     "start": "next start -p 3000",
-    "deploy": "now -n project-pescadero && now alias"
+    "deploy": "now -n project-pescadero && now alias",
+    "stage": "now -n project-pescadero-staging && now alias staging-project-pescadero.now.sh"
   },
   "keywords": [],
   "author": "",
